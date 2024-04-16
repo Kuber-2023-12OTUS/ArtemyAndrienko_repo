@@ -18,3 +18,10 @@ spec:
             port:
               number: 8000
         path: /
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: webserver
+            port:
+              number: 8000
+        path: /homepage(/|$)

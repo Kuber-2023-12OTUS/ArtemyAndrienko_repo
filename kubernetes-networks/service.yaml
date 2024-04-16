@@ -6,6 +6,9 @@ metadata:
   labels:
     app.kubernetes.io/instance: webserver
     app.kubernetes.io/name: webserver
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ports:
   - name: http-8000
