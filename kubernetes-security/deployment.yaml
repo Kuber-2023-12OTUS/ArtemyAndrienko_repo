@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver
+  namespace: homework
+  labels:
+    app.kubernetes.io/instance: webserver
+    app.kubernetes.io/name: webserver
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webserver
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: homework
+      #           operator: In
+      #           values:
+      #           - 'true'
+      volumes:
+      - name: web-content
+        emptyDir: {}
+      initContainers:
+      - name: init-container
+        image: alpine/curl
+        command: ['sh', '-c', 'echo "kubernetes-intro" > index.html && cp index.html init/ ; curl -sSk -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/metrics > /init/metrics.html']
+        volumeMounts:
+        - name: web-content
+          mountPath: /init
+      serviceAccountName: monitoring
+      containers:
+      - name: web
+        image: busybox
+        command: ['sh', '-c', 'ls -la /homework && /bin/httpd  -f -p 8000 -h /homework/']
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 200m
+            memory: 100Mi
+          requests:
+            cpu: 200m
+            memory: 100Mi
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "rm -f /homework/index.html"]
+        readinessProbe:
+          httpGet:
+            path: /index.html
+            port: 8000
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: web-content
+          mountPath: /homework
+
