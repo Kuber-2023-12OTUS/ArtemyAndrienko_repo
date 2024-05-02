@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webserver
+  namespace: homework
+data:
+  content.txt: |
+    type: "busybox"
+    platform: "kubernetes"
+    revision: "hw6"
