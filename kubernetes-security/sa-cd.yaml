@@ -27,3 +27,12 @@ roleRef:
   kind: Role
   name: admin
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    kubernetes.io/service-account.name: cd
+  name: cd-token
+  namespace: homework
+type: kubernetes.io/service-account-token

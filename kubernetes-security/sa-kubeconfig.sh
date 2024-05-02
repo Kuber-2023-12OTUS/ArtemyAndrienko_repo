@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 set -o pipefail
 
@@ -10,8 +10,8 @@ fi
 
 SERVICE_ACCOUNT_NAME=$1
 NAMESPACE="$2"
-KUBECFG_FILE_NAME="/tmp/kube/k8s-${SERVICE_ACCOUNT_NAME}-${NAMESPACE}-conf"
-TARGET_FOLDER="/tmp/kube"
+KUBECFG_FILE_NAME="./tmp_kube/k8s-${SERVICE_ACCOUNT_NAME}-${NAMESPACE}-conf"
+TARGET_FOLDER="./tmp_kube"
 
 create_target_folder() {
     echo -n "Creating target directory to hold files in ${TARGET_FOLDER}..."

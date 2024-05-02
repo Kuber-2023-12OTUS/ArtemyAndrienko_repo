@@ -20,22 +20,22 @@ spec:
       labels:
         app: webserver
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: homework
-                operator: In
-                values:
-                - 'true'
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: homework
+      #           operator: In
+      #           values:
+      #           - 'true'
       volumes:
       - name: web-content
         emptyDir: {}
       initContainers:
       - name: init-container
-        image: busybox
-        command: ['sh', '-c', 'echo "kubernetes-intro" > index.html && cp index.html init/']
+        image: alpine/curl
+        command: ['sh', '-c', 'echo "kubernetes-intro" > index.html && cp index.html init/ ; curl -sSk -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/metrics > /init/metrics.html']
         volumeMounts:
         - name: web-content
           mountPath: /init
@@ -70,3 +70,4 @@ spec:
         volumeMounts:
         - name: web-content
           mountPath: /homework
+
