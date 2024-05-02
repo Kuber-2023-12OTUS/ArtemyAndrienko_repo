@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: webserver-pvc
+  namespace: homework
+  labels:
+    app: webserver
+spec:
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+  # storageClassName: "yc-network-hdd"
+  storageClassName: "otus-sc"
