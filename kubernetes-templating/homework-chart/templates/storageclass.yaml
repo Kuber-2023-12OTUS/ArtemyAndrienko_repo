@@ -1,0 +1,9 @@
+{{- if $.Values.deploy.storageClass }}
+{{- $sc := $.Values.deploy.storageClass}}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ $sc.name | quote }}
+provisioner: {{ $sc.provisioner }}
+reclaimPolicy: {{ $sc.reclaimPolicy }}
+{{- end }}
