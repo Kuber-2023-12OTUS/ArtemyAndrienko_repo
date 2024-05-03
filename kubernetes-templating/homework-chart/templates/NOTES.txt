@@ -1,0 +1,10 @@
+Для проверки работоспособности приложения перейдите по ссылке:
+{{- if $.Values.deploy.ingress.enabled }}
+{{- range $host := $.Values.deploy.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.deploy.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if contains "ClusterIP" .Values.deploy.service.type }}
+  echo "Visit http://homework.otus/index.html to use your application"
+{{- end }}

@@ -1,0 +1,96 @@
+{{- if $.Values.deploy.deployment }}
+{{ $deploy := $.Values.deploy.deployment }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $deploy.name }}
+  namespace: {{ $.Values.global.namespace }}
+  {{- if $deploy.labels}}
+  labels:
+    {{- range $k, $v := $deploy.labels }}
+    {{ $k }}: {{ $v }}
+    {{- end }}
+  {{- end }}
+spec:
+  replicas: {{ $deploy.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $deploy.name }}
+  strategy:
+  {{- if eq $deploy.strategy.type "rollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ $deploy.strategy.maxSurge }}
+      maxUnavailable: {{ $deploy.strategy.maxUnavailable }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        app: {{ $deploy.name }}
+    spec:
+  {{- if $deploy.affinity }}  
+      affinity:
+    {{- range $deploy.affinity }}
+        {{ . | toYaml | indent 8 | trim }}
+    {{- end }}
+  {{- end }}
+      volumes:
+  {{- range $k, $v := $deploy.volumes }}
+      - name: {{ $v.name | quote }}
+    {{- if hasKey $v "configMap" }}
+        configMap:
+          name: {{ $v.configMap.name}}
+    {{- end }}
+    {{- if hasKey $v "persistentVolumeClaim" }}
+        persistentVolumeClaim:
+          claimName: {{ $v.persistentVolumeClaim.claimName}}
+    {{- end }}
+  {{- end }}      
+      initContainers:
+      - name: init-container
+        image: alpine/curl
+        command: ['sh', '-c', 'echo "kubernetes-intro" > index.html && cp index.html init/ ; curl -sSk -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/metrics > /init/metrics.html']
+        volumeMounts:
+        - name: web-content
+          mountPath: /init
+  {{- if $deploy.serviceAccount }}
+      serviceAccountName: {{ $deploy.serviceAccount }}
+  {{- end }}
+      containers:
+      - name: web
+        image: {{ $deploy.imageName }}
+  {{- if $deploy.command }}
+        command:
+    {{- range $deploy.command }}
+          - {{ toYaml . | squote }}
+    {{- end }}
+  {{- end }}
+        imagePullPolicy: {{ $deploy.imagePullPolicy }}
+        resources:
+          limits:
+            cpu: {{ $deploy.resources.limits.cpu }}
+            memory: {{ $deploy.resources.limits.memory }}
+          requests:
+            cpu: {{ $deploy.resources.requests.cpu }}
+            memory: {{ $deploy.resources.requests.memory }}
+  {{- if $deploy.lifecycle }}
+        lifecycle:
+{{ toYaml $deploy.lifecycle | indent 10 }}    
+  {{- end }}
+  {{- if $deploy.readinessProbe }}  
+        readinessProbe:
+{{ toYaml $deploy.readinessProbe | indent 10 }}
+  {{- end }}
+  {{- if $deploy.livenessProbe }}  
+        livenessProbe:
+{{ toYaml $deploy.livenessProbe | indent 10 }}
+  {{- end }}
+        ports:
+        - name: http-{{ $deploy.portNumber }}
+          containerPort: {{ $deploy.portNumber }}
+          protocol: TCP
+        volumeMounts:
+  {{- range $k, $v := $deploy.volumeMounts }}
+        - name: {{ $v.name | quote }}
+          mountPath: {{ $v.mountPath | quote }}
+  {{- end }}
+{{- end }}

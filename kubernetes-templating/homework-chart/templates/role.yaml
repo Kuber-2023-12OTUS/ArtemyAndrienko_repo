@@ -1,0 +1,15 @@
+{{- range $kv := $.Values.deploy.rbacAuthorization }}
+  {{- if eq $kv.type "Role" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $kv.name }}
+  namespace: {{ $.Values.global.namespace }}
+    {{- if $kv.rules }}
+rules:
+      {{- range $kv.rules }}
+- {{ . | toYaml | indent 2 | trim  }}
+      {{- end }}  
+    {{- end }}
+  {{- end }}
+{{- end }}  
