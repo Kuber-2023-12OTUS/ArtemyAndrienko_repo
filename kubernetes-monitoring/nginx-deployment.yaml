@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+    spec:
+      #serviceAccountName: default
+      imagePullSecrets:
+      - name: my-docker
+      containers:
+      - name: nginx
+        image: artemyandrienko/nginx-metrics:0.2.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 200m
+            memory: 100Mi
+          requests:
+            cpu: 200m
+            memory: 100Mi
+        readinessProbe:
+          httpGet:
+            port: 80
+            path: /index.html
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        ports:
+        - containerPort: 80
+          protocol: TCP
+      - name: nginx-prometheus-exporter
+        image: nginx/nginx-prometheus-exporter:1.1.0
+        resources:
+          limits:
+            cpu: 200m
+            memory: 100Mi
+          requests:
+            cpu: 200m
+            memory: 100Mi
+        args: ['--nginx.scrape-uri', 'http://127.0.0.1:80/metrics']
+        ports:
+        - containerPort: 9113
+          protocol: TCP
