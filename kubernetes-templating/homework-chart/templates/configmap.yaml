@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Values.deploy.configmap.name }}
+  namespace: {{ $.Values.global.namespace }}
+data:
+  content.txt: |
+    type: "busybox"
+    platform: "kubernetes"
+{{- if hasKey $.Values.global "revision" }}    
+    revision: {{ $.Values.global.revision | quote }}
+{{- end -}}

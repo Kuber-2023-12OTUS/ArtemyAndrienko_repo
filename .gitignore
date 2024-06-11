@@ -1,6 +1,5 @@
-
-*/*/.terraform.lock.hcl
-*/*/*key.json
-*/*/terraform.tfstate*
-*/*/.terraform/*
 */*/terraform.tfvars
+*/*/*terraform.tfstate*
+*/*/.terraform.lock.hcl
+*/*/.terraform/*
+*/*/*key.json

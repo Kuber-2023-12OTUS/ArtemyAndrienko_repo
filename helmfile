@@ -1,0 +1,7 @@
+docker run --rm --net=host \
+   -v "${HOME}/.kube:/root/.kube" \
+   -v "${HOME}/.config/helm:/root/.config/helm" \
+   -v "${HOME}/.minikube:/${HOME}/.minikube" \
+   -v "${PWD}:/wd" \
+   -e KUBECONFIG=/root/.kube/config \
+   --workdir /wd ghcr.io/helmfile/helmfile:v0.150.0 helmfile "$@"

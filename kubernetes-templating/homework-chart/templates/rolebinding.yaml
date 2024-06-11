@@ -1,0 +1,17 @@
+{{- range $kv := $.Values.deploy.rbacAuthorization }}
+  {{- if eq $kv.type "RoleBinding" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $kv.name }}
+  namespace: {{ $.Values.global.namespace}}
+subjects:
+- kind: ServiceAccount
+  name: {{ $kv.saName }}
+  namespace: {{ $.Values.global.namespace}}
+roleRef:
+  kind: Role
+  name: {{ $kv.roleRef }}
+  apiGroup: rbac.authorization.k8s.io
+  {{- end }}
+{{- end }}  

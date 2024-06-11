@@ -1,0 +1,18 @@
+{{- range $kv := $.Values.deploy.persistentVolumeClaim -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $kv.name }}
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    app: webserver
+spec:
+  accessModes:
+  - {{ $kv.accessModes }}
+  volumeMode: {{ $kv.volumeMode }}
+  resources:
+    requests:
+      storage: {{ $kv.resourcesReqStorage }}
+  storageClassName: {{ $kv.storageClassName | quote }}
+{{- end -}}
