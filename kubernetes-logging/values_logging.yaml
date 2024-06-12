@@ -1,0 +1,49 @@
+loki:
+  nodeSelector:
+    infra: "true"
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+
+
+  auth_enabled: false
+  server:
+    http_listen_port: 3100
+    grpc_listen_port: 9096
+  commonConfig:
+    replication_factor: 1
+
+  common:
+    instance_addr: 0.0.0.0
+
+  storage:
+    bucketNames:
+      chunks: s3-bucket-otus-default
+      admin: s3-sa-default
+      ruler: s3-sa-default
+      signatureVersion: null
+      s3ForcePathStyle: true
+      insecure: true
+    type: 's3'
+    s3:
+      endpoint: storage.yandexcloud.net
+      accessKeyId: xxx
+      secretAccessKey: yyy
+promtail:
+  nodeSelector:
+    infra: "true"
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+
+
+# grafana:
+#   tolerations:
+#   - key: infra
+#     operator: Equal
+#     value: "true"
+#     effect: NoSchedule

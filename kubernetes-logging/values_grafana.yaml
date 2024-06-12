@@ -1,0 +1,16 @@
+nodeSelector:
+  infra: "true"
+tolerations:
+- key: "node-role"
+  operator: "Equal"
+  value: "infra"
+  effect: "NoSchedule"
+
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Loki
+      type: loki
+      url: http://loki-gateway/
