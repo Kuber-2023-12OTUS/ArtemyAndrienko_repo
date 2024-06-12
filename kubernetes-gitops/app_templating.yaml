@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-templating
+  namespace: argocd
+spec:
+  project: otus
+  source:
+    repoURL: https://github.com/Kuber-2023-12OTUS/ArtemyAndrienko_repo.git
+    targetRevision: HEAD
+    path: 'kubernetes-templating/homework-chart'
+    helm:
+      releaseName: web
+      valueFiles:
+      - ../values_homework.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homework
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - ApplyOutOfSyncOnly=true
+    - CreateNamespace=true
