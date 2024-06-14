@@ -1,0 +1,13 @@
+## Argo CD configuration
+## Ref: https://github.com/argoproj/argo-cd
+
+global:
+
+  nodeSelector:
+    infra: "true"
+
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
