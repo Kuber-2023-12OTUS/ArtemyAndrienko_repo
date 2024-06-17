@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  namespace: debugging
+  labels:
+    app: nginx
+spec:
+  # https://kubesec.io/basics/containers-securitycontext-runasuser/
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
+    # fsGroup: 2000
+  # shareProcessNamespace: true
+  containers:
+  - name: nginx
+    image: kyos0109/nginx-distroless
+    imagePullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 500m
+        memory: 128Mi
+    ports:
+    - containerPort: 80
+    securityContext:
+      # allowPrivilegeEscalation: false
+      runAsNonRoot: false
+      seccompProfile:
+        type: Unconfined
+      capabilities:
+        add:
+        - CAP_SYS_ADMIN
+
