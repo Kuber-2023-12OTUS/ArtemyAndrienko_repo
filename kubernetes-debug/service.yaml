@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx
+  namespace: debugging
+  labels:
+    app.kubernetes.io/instance: nginx
+    app.kubernetes.io/name: nginx
+spec:
+  ports:
+  - name: http-80
+    protocol: TCP
+    port: 8080
+    targetPort: 80
+  selector:
+    app: nginx
+  type: ClusterIP
